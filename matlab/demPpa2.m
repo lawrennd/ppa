@@ -2,8 +2,8 @@
 
 % PPA
 
-X=load('..\data\overlap_train_data_1.asc');
-y=load('..\data\overlap_train_labels_1.asc');
+X=load('../data/overlap_train_data_1.asc');
+y=load('../data/overlap_train_labels_1.asc');
 
 
 % Define the noise model to be used

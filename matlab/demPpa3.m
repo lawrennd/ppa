@@ -3,15 +3,15 @@
 % PPA
 
 % Alternative data set the can not be solved linearly
-X=load('..\data\banana_train_data_1.asc');
-y=load('..\data\banana_train_labels_1.asc');
+X=load('../data/banana_train_data_1.asc');
+y=load('../data/banana_train_labels_1.asc');
 
 
 % Define the noise model to be used
 noiseModel='probit';
 
 % Define the kernel to be used
-kernelType={'lin','bias', 'white'};
+kernelType={'mlp','bias', 'white'};
 
 options = ppaOptions;
 options.display = 2; % display graphically as we go.

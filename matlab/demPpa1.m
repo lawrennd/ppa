@@ -3,8 +3,8 @@
 % PPA
 
 % Load the data
-X=load('..\data\rand_data.asc');
-y=load('..\data\rand_labels.asc');
+X=load('../data/rand_data.asc');
+y=load('../data/rand_labels.asc');
 
 % Define the noise model to be used
 noiseModel='probit';

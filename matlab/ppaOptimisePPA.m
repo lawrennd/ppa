@@ -7,27 +7,28 @@ function model = ppaOptimisePPA(model, options);
 % Initalise the parameters
 model = ppaInit(model);
 
-% set convergence and counter
-convergence=0;
-counter=1;
-
 % plot inital setup
 if options.display>1
   if size(model.X, 2) == 2
-    ppaTwoDPlot(model, counter, model.X, model.y);
+    ppaTwoDPlot(model, 1, model.X, model.y);
   end
 end
 
+
+% set convergence and counter
+convergence=0;
+counter=0;
 % calculate start loglikelihood
 [oldLogLike]=ppaCalculateLogLike2(model);
 
-while(convergence==0)
-  % Do the E step calculations
-  model=ppaEStep(model);
-  
+while(convergence==0 & counter < options.maxOuterIter)
+  counter=counter+1;  
   % Do the M step calculations
-  model=ppaMStep(model);  
-    
+  model=ppaMStep(model, options);  
+  
+  % Do the E step calculations
+  model=ppaEStep(model, options);
+
   % Calculate the likelihood of the current model 
   [logLike]=ppaCalculateLogLike2(model);
   
@@ -59,5 +60,5 @@ while(convergence==0)
   end
   
   oldLogLike=logLike;  
-  counter=counter+1;
 end
+model.numIters = counter;

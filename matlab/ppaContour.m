@@ -1,4 +1,4 @@
-function ppaContour(X, Y, Z, lineWidth)
+function h = ppaContour(X, Y, Z, lineWidth)
 
 % PPACONTOUR Special contour plot showing decision boundary.
 
@@ -6,6 +6,8 @@ function ppaContour(X, Y, Z, lineWidth)
 
 % It's probably learnt something.
 [void, clines] =contour(X, Y, Z, [0.25 .75], 'b--');
+h = clines;
 set(clines, 'linewidth', lineWidth)
 [void, clines] =contour(X, Y, Z, [0.5 0.5], 'r-');
 set(clines, 'linewidth', lineWidth);
+h = [h; clines];

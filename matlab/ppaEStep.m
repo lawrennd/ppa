@@ -1,4 +1,4 @@
-function model= ppaEStep(model)
+function model= ppaEStep(model, options)
 
 % PPAESTEP Perform the expectation step in the EM optimisation.
 

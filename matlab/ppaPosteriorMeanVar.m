@@ -20,9 +20,10 @@ for i = 1:D
   Kinvk = invSigma*kX;
   for n = 1:numData
     varsigma(n, i) = diagK(n) - kX(:, n)'*invSigma*kX(:, n);
-    if any(varsigma(n, :) < 0)
-      warning('Varsigma less than zero');
-    end
+  end
+  if any(varsigma(:, i) < 0)
+    warning('Varsigma values less than zero, setting to zero.');
+    varsigma(find(varsigma(:, i)<0), i)=0;
   end
   mu(:, i) = Kinvk'*model.expectations.fBar(:, i);
 end

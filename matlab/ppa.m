@@ -33,6 +33,7 @@ model.kern = kernCreate(X, kernelType);
 model.kern.Kstore = zeros(numData, numData);
 model.kern.invKstore = zeros(numData, numData);
 
+
 % Set up storage for the expectations
 model.expectations.f = zeros(size(model.y));
 model.expectations.ff = zeros(size(model.y));
