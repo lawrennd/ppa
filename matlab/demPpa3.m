@@ -17,6 +17,7 @@ options = ppaOptions;
 options.display = 2; % display graphically as we go.
 
 model=ppa(X, y, noiseModel, kernelType);
+
 model=ppaOptimisePPA(model, options);
 
 

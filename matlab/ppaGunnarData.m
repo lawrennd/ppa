@@ -43,6 +43,9 @@ beta = model.B(1, 1);
 kernParam = kernExtractParam(model.kern);
 noiseParam = noiseExtractParam(model.noise);
 numIters = model.numIters;
-save(['ppa' dataSet num2str(dataNum) kernelType{1}], 'classError', 'll', ...
+invWidthStr = num2str(invWidth);
+ind = find(invWidthStr==48);
+invWidthStr(46) = 'p';
+save(['ppa' dataSet num2str(dataNum) kernelType{1} invWidthStr], 'classError', 'll', ...
      'beta', 'kernParam', 'noiseParam', 'numIters')
      
