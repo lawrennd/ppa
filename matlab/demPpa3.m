@@ -11,14 +11,14 @@ y=load('../data/banana_train_labels_1.asc');
 noiseModel='probit';
 
 % Define the kernel to be used
-kernelType={'mlp','bias', 'white'};
+kernelType={'rbf','bias', 'white'};
 
 options = ppaOptions;
 options.display = 2; % display graphically as we go.
 
 model=ppa(X, y, noiseModel, kernelType);
 
-model=ppaOptimisePPA(model, options);
+[model]=ppaOptimisePPA(model, options)
 
-
+%save('dem3NV', 'savedLoglike');
 

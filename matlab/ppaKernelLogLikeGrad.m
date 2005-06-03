@@ -1,8 +1,8 @@
 function g = ppaKernelLogLikeGrad(model)
 
-% PPAPPROXLOGLIKEKERNGRAD Gradient of the kernel likelihood wrt kernel parameters.
+% PPAKERNELLOGLIKEGRAD Gradient of the kernel likelihood wrt kernel parameters.
 
-% IVM
+% PPA
 
 x = model.X;
 m = model.expectations.f;

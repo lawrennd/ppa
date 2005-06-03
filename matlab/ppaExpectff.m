@@ -2,6 +2,8 @@ function model = ppaExpectff(model)
 
 % PPAEXPECTFF Second moment of f under q(f).
 
+% PPA
+
 numData = size(model.y, 1);
 m = model.expectations.fBar;
 for i=1:numData    

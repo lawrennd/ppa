@@ -16,7 +16,7 @@ kX = kernCompute(model.kern, X, model.X)';
 % COmpute diagonal of kernel for new point.
 diagK = kernDiagCompute(model.kern, X);
 for i = 1:D
-  invSigma = pdinv(diag(1./model.B(i, :)) + model.kern.Kstore);
+  invSigma = pdinv(diag(1./model.B(:,i)) + model.kern.Kstore);
   Kinvk = invSigma*kX;
   for n = 1:numData
     varsigma(n, i) = diagK(n) - kX(:, n)'*invSigma*kX(:, n);

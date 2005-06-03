@@ -11,5 +11,5 @@ for i=1:size(model.y, 2)
       + trace(model.expectations.fBarfBar(:, :, i)); 
   
   % Replacing B in the model with its update        
-  model.B(:, i) = repmat(numData/invAlpha, numData, 1);
+  model.B(:, i) = repmat(numData./invAlpha, numData, 1);
 end

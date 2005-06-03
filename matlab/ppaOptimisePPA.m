@@ -1,11 +1,11 @@
-function model = ppaOptimisePPA(model, options);
+function [model] = ppaOptimisePPA(model, options);
 
 % PPAOPTIMISEPPA Optimise the probabilistic point assimilation model.
 
 % PPA
 
 % Initalise the parameters
-model = ppaInit(model);
+model = ppaInit(model,options);
 
 % plot inital setup
 if options.display>1
@@ -19,18 +19,21 @@ end
 convergence=0;
 counter=0;
 % calculate start loglikelihood
-[oldLogLike]=ppaCalculateLogLike2(model);
+[oldLogLike]=ppaCalculateLogLike(model);
 
 while(convergence==0 & counter < options.maxOuterIter)
   counter=counter+1;  
+  
+  
   % Do the M step calculations
-  model=ppaMStep(model, options);  
+  [model,options]=ppaMStep(model, options);  
+ 
   
   % Do the E step calculations
-  model=ppaEStep(model, options);
+  [model,options]=ppaEStep(model, options);
 
   % Calculate the likelihood of the current model 
-  [logLike]=ppaCalculateLogLike2(model);
+  [logLike]=ppaCalculateLogLike(model);
   
   % Plot results at n iteration intervals
   if options.display > 1
@@ -52,6 +55,7 @@ while(convergence==0 & counter < options.maxOuterIter)
   if(logLikeDiff<0)
     % If the loglike goes down display warning of this
     warning('Log likelihood went down');
+    
   else
     if(logLikeDiff<options.tol)
       convergence=1;
@@ -60,5 +64,9 @@ while(convergence==0 & counter < options.maxOuterIter)
   end
   
   oldLogLike=logLike;  
+end
+
+if(convergence~=1)
+    fprintf('Algorithm has reached maximum number of iterations');
 end
 model.numIters = counter;

@@ -1,6 +1,6 @@
 function y = ppaOut(model, x);
 
-% PPAOUT Evaluate the output of an ivm model.
+% PPAOUT Evaluate the output of an ppa model.
 
 % PPA
 

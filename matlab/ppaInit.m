@@ -1,4 +1,4 @@
-function model = ppaInit(model, d)
+function model = ppaInit(model, options)
 
 % PPAINIT Initialise the probabilistic point assimilation model.
 
@@ -21,7 +21,7 @@ end
 model.g = zeros(numData, numOut);
 model.nu = zeros(numData, numOut);
 model.gamma = zeros(numData, numOut);
-model = ppaEStep(model);
+model = ppaEStep(model,options);
 
 
 

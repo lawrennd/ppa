@@ -1,4 +1,4 @@
-% DEMPPA3 A simple demonstration on the Banana data.
+% DEMPPA4 A simple demonstration. 
 
 % PPA
 

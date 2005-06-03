@@ -16,7 +16,6 @@ if display
 end
 options(14) = iters;
 
-
 model = optimiseParams('kern', 'scg', 'ppaKernelObjective', ...
                        'ppaKernelGradient', options, model);
   
