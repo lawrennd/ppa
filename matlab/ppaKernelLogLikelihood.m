@@ -2,7 +2,7 @@ function L = ppaKernelLogLikelihood(model);
 
 % PPAKERNELLOGLIKELIHOOD Return the approximate log-likelihood for the PPA.
 
-% IVM
+% PPA
 
 x = model.X;
 m = model.expectations.f;
