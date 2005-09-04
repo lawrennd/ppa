@@ -6,18 +6,16 @@ using namespace std;
 const double NULOW=1e-16;
 const string PPAVERSION="0.1";
 
-class CPpa : public COptimisableModel {
+class CPpa : public COptimisableKernelModel {
  public:
   // Constructor given a filename.
   CPpa(const string modelFileName, const int verbos=2);
   // Constructor given a kernel and a noise model.
   CPpa(const CMatrix& inData, const CMatrix& targetData, 
-       CKern& kernel, CNoise& noiseModel, const int selectCrit,
-       const int dVal, const int verbos=2);
-  CPpa(const CMatrix& actX, const CMatrix& actY, 
-       const CMatrix& mmat, const CMatrix& betamat, 
-       const vector<int> actSet, CKern& kernel, 
-       CNoise& noiseModel, const int selectCrit=ENTROPY, 
+       CKern& kernel, CNoise& noiseModel, const int verbos=2);
+  CPpa(const CMatrix& trX, const CMatrix& trY, 
+       const CMatrix& mmat, const CMatrix& betamat, CKern& kernel, 
+       CNoise& noiseModel, 
        const int verbos=2);
 
 #ifdef _NDLMATLAB
@@ -34,22 +32,27 @@ class CPpa : public COptimisableModel {
   void initStoreage();
   // Set the initial values for the model.
   void initVals();
-  void selectPoints(); // select active set points.
-  void addPoint(const int index); // add a point to the model.
-  void updateSite(const int index); // update the site parameters at index.
-  void updateM(const int index); // update M at index.
 
-  int selectPointAdd(); // select a point to add to active set.
-  int entropyPointAdd(); // add a point selected by entropy change.
-  int randomPointAdd();  // add a point selected randomly.
-  double entropyChangeAdd(const int) const; // entropy change associated with adding a point
+  // update the site parameters at index.
+  void updateSite(const int index); 
 
-  int selectPointRemove();  // select a point to remove from the active set.
-  int entropyPointRemove(); // remove a point selected by entropy change.
-  int randomPointRemove(); // remove a point selected randomly.
-  double entropyChangeRemove(const int) const; // entropy change associated with removing a point
+  // Run the expectation step in the E-M algorithm.
+  void eStep();
+  // Run the maximisation step in the E-M algorithm.
+  void mStep();
+
+  // Update expectations of f.
+  void updateExpectationf();
+  // Update expectations of f^2
+  void updateExpectationff();
+  // Update expectations of fBar and fBarfBar
+  void updateExpectationsfBar();
+
   void test(const CMatrix& ytest, const CMatrix& Xin) const;
   void likelihoods(CMatrix& pout, CMatrix& yTest, const CMatrix& Xin) const;
+  // log likelihood of training set.
+  double logLikelihood() const;
+  // log likelihood of test set.
   double logLikelihood(const CMatrix& yTest, const CMatrix& Xin) const;
   void out(CMatrix& yPred, const CMatrix& inData) const;
   void out(CMatrix& yPred, CMatrix& probPred, const CMatrix& inData) const;
@@ -57,11 +60,6 @@ class CPpa : public COptimisableModel {
   string getNoiseName() const
     {
       return noise.getNoiseName();
-    }
-  inline int changeEntropy(const double val)
-    {
-      cumEntropy += val;
-      lastEntropyChange = val;
     }
 
   // Gradient routines
@@ -72,22 +70,14 @@ class CPpa : public COptimisableModel {
     {
       terminate = val;
     }
-  inline void setEpUpdate(const bool val)
-    {
-      epUpdate = val;
-    }
   inline bool isTerminate() const
     {
       return terminate;
     }
-  inline bool isEpUpdate() const 
-    {
-      return epUpdate;
-    }
   void updateNuG();
-  // update K with the kernel computed from the active points.
+  // update K with the kernel computed from the training points.
   void updateK() const;
-  // update invK with the inverse of the kernel plus beta terms computed from the active points.
+  // update invK with the inverse of the kernel plus beta terms computed from the training points.
   void updateInvK(const int index=0) const;
   // compute the approximation to the log likelihood.
   double approxLogLikelihood() const;
@@ -118,36 +108,6 @@ class CPpa : public COptimisableModel {
     {
       type = name;
     }
-  string getTypeSelection() const
-    {
-      switch(selectionCriterion)
-	{
-	case ENTROPY:
-	  return "entropy";
-	case RENTROPY:
-	  return "rentropy";
-	case RANDOM:
-	  return "random";
-	otherwise:
-	  cerr << "Unrecognised selection criterion." << endl;
-	}
-    }
-  void setTypeSelection(const string val) 
-    {
-      if(val=="entropy")
-	selectionCriterion=ENTROPY;
-      else if(val=="rentropy")
-	selectionCriterion=RENTROPY;
-      else if(val=="random")
-	selectionCriterion=RANDOM;
-      else
-	cerr << "Unrecognised selection criterion " << val << "." << endl;
-    }
-  void setTypeSelection(const int val)
-    {
-      assert(val>=ENTROPY & val<=RANDOM);
-      selectionCriterion=val;
-    }
   void computeObjectiveGradParams(CMatrix& g) const
     {
       approxLogLikelihoodGradient(g);
@@ -163,9 +123,17 @@ class CPpa : public COptimisableModel {
 #endif
   const CMatrix& X;
 
-  int getActiveSetSize() const
+  int getNumTrainData() const
     {
-      return activeSetSize;
+      return numTrainData;
+    }
+  int getNumActiveData() const
+    {
+      return numTrainData;
+    }
+  double getBetaVal(const int i, const int j) const
+    {
+      return beta.getVal(1, j);
     }
   int getNumProcesses() const
     {
@@ -175,26 +143,30 @@ class CPpa : public COptimisableModel {
     {
       return activeX.getCols();
     }
-  double getActiveX(const int i, const int j) const
+  double getTrainingX(const int i, const int j) const
     {
       return activeX.getVal(i, j);
     }
-  int getActivePoint(const int i) const
+  int getTrainingPoint(const int i) const
     {
-      return activeSet[i];
+      return i;
     }
   // arguably these are noise model associated.
   const CMatrix& y;
   
   CMatrix nu;
   CMatrix g;
+
+  CMatrix beta;
   
   CMatrix Kstore;
+  CMatrix wasM;
   CMatrix f;
   CMatrix ff;
   CMatrix fBar;
   CMatrix gamma;
-  vector<CMatrix*> fBarfBar;
+  // Covariance of q distribution over fbar.
+  vector<CMatrix*> C;
   
   // these really just provide local storage
   mutable CMatrix covGrad;
@@ -207,21 +179,15 @@ class CPpa : public COptimisableModel {
   mutable CMatrix ainv;
 
 
-  CMatrix activeX;
-  CMatrix activeY;
+  CMatrix trainY;
 
   CMatrix* M;
   CMatrix* L;
   CMatrix* Linv;
 
-  //  COptions options;
   
-  vector<int> activeSet;
-  vector<int> inactiveSet;
-
   CKern& kern;
   CNoise& noise;
-  enum{ENTROPY, RENTROPY, RANDOM};
 
 
  private:
@@ -234,16 +200,12 @@ class CPpa : public COptimisableModel {
   bool loadedModel;
 
   int numCovStruct;
-  int activeSetSize;
+  int numTrainData;
 
   int numTarget;
   int numData;
   int numIters;
-  
-  double lastEntropyChange;
-  double cumEntropy;
-  int selectionCriterion; 
-  
+    
   string type;
 };
 

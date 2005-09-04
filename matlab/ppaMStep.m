@@ -39,7 +39,7 @@ if ~options.varKern
         model.kern.Kstore=kernCompute(model.kern, model.X);
         model.kern.invKstore=pdinv(model.kern.Kstore);
         
-        % Do this update again this time with varaitional method
+        % Do this update again this time with variational method
         model = ppaUpdateKernel(model, options);
     end
 end
@@ -58,7 +58,7 @@ if ~options.varKern
     logLikeDiffB=logLikeB-logLikeK;%currentLogLike;
     if(logLikeDiffB<0)
         % If the loglike goes down and we are using the non varitional kernel
-        % updates switch to variationl
+        % updates switch to variational
         
         options.varKern = 1;
         if options.display
