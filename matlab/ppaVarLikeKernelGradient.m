@@ -11,6 +11,6 @@ end
 %~/
 
 model.kern = kernExpandParam(model.kern, params);
-g = ppaKernelLogLikeGrad(model);
+g = ppaVarLikeKernelLogLikeGrad(model);
 g = g + kernPriorGradient(model.kern);
 g = -g;

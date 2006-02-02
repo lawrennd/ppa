@@ -5,93 +5,52 @@ function [model,options]= ppaEStep(model, options)
 % PPA
 
 
-
 numData = size(model.X, 1);
+numOut = size(model.y, 2);
 
-% Compute G and nu
-[model.g, model.nu] = noiseUpdateNuG(model.noise, ...
-                                     model.expectations.fBar, ...
-                                     1./model.B, ...
-                                     model.y);
-
-% Compute gamma
-model.gamma = (((model.g).^2)-model.nu)/2;
-
+if ~model.options.scalarB
+    % if independent beta values then create a matrix
+    B = model.B;
+else
+    % if scalar then store a single value
+    B = repmat(model.B, numData, 1);
+end    
+    
 
 if ~options.varKern
     [currentLogLike]=ppaCalculateLogLike(model);
 end
+
+if options.doDebug
+    % Do E step check
+    [oldfBarLike,model] = ppaNewfBarLike(model, 0);
+    oldmodel = model;
+end
+    
+    model = ppaExpectfBar(model); % these are expectations under q(fBar)
+    model = ppaExpectfBarfBar(model);
+
+if options.doDebug
+    diff = ppadiffFBar(model,oldmodel) 
+    [newfBarLike,model] = ppaNewfBarLike(model, 1);
+    
+    for i = 1 : size(model.y,2)
+        model.ninvC(:,:,i) = pdinv(model.kern.Kstore) + model.B(:,i);
+    end
+
+    model.updatediffs(3) = newfBarLike-oldfBarLike;
+end
+
+% Compute G and nu
+ [model.g, model.nu] = noiseUpdateNuG(model.noise, ...
+                                      model.expectations.fBar, ...
+                                      1./B, ...
+                                      model.y);
+
+% Compute gamma
+model.gamma = (((model.g).^2)-model.nu)/2;
     
 
 model = ppaExpectf(model); % these are expectations under q(f)
 
-% check for kernel switch
-if ~options.varKern
-    [logLikeF]=ppaCalculateLogLike(model);
-    logLikeDiffF=logLikeF-currentLogLike;
-    if(logLikeDiffF<0)
-        % If the loglike goes down and we are using the non varitional kernel
-        % updates switch to variationl
-        options.varKern = 1;
-        if options.display
-            fprintf('Switching to full variational updates, log-likelihood change %2.7f\n',logLikeDiffF);   
-        end
-    end
-end
-
-
 model = ppaExpectff(model);
-
-% check for kernel switch
-if ~options.varKern
-    [logLikeFF]=ppaCalculateLogLike(model);
-    logLikeDiffFF=logLikeFF-logLikeF;
-    if(logLikeDiffFF<0)
-        % If the loglike goes down and we are using the non varitional kernel
-        % updates switch to variationl
-        options.varKern = 1;
-        if options.display
-            fprintf('Switching to full variational updates, log-likelihood change %2.7f\n',logLikeDiffFF);   
-        end
-    end
-end
-
-
-model = ppaExpectfBar(model); % these are expectations under q(fBar)
-
-% check for kernel switch
-if ~options.varKern
-    [logLikeFBAR]=ppaCalculateLogLike(model);
-    logLikeDiffFBAR=logLikeFBAR-logLikeFF;
-    if(logLikeDiffFBAR<0)
-        % If the loglike goes down and we are using the non varitional kernel
-        % updates switch to variationl
-        options.varKern = 1;
-        if options.display
-            fprintf('Switching to full variational updates, log-likelihood change %2.7f\n',logLikeDiffFBAR);   
-        end
-    end
-end
-
-  
-model = ppaExpectfBarfBar(model);
-
-% check for kernel switch
-if ~options.varKern
-    [logLikeFBARFBAR]=ppaCalculateLogLike(model);
-    logLikeDiffFBARFBAR=logLikeFBARFBAR-logLikeFBAR;
-    if(logLikeDiffFBARFBAR<0)
-        % If the loglike goes down and we are using the non varitional kernel
-        % updates switch to variationl
-        options.varKern = 1;
-        if options.display
-            fprintf('Switching to full variational updates, log-likelihood change %2.7f\n',logLikeDiffFBARFBAR);   
-        end
-    end
-end
- 
-    
-    
-    
-       
-    

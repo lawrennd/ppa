@@ -7,8 +7,9 @@ function model = ppa(X, y, noiseType, kernelType);
 model.type = 'ppa';
 numData = size(X, 1);
 
-model.X = X;
-model.y = y;
+model.X = X
+model.y = y
+%pause
 
 %/~
 % Set this for consistency with IVM code ... should not be needed.
@@ -28,6 +29,7 @@ model.noise = noiseCreate(noiseType, y);
 
 % B
 model.B = [];
+
 % Kernels setup for K
 model.kern = kernCreate(X, kernelType);
 model.kern.Kstore = zeros(numData, numData);

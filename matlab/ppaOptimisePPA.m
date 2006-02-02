@@ -1,9 +1,11 @@
-function [model] = ppaOptimisePPA(model, options);
+function [model,logLikeVals,cpuStore] = ppaOptimisePPA(model, options);
 
 % PPAOPTIMISEPPA Optimise the probabilistic point assimilation model.
 
 % PPA
 
+logLikeVals = [];
+cpuStore    = [];
 % Initalise the parameters
 model = ppaInit(model,options);
 
@@ -21,19 +23,48 @@ counter=0;
 % calculate start loglikelihood
 [oldLogLike]=ppaCalculateLogLike(model);
 
+if options.rememLoglikeVals
+    %b=cputime;
+    cpuStore=[cpuStore,0];
+    logLikeVals = [logLikeVals,oldLogLike];  
+end
+
+% A check for the f updates
+model.oldLogLike = oldLogLike;
+
 while(convergence==0 & counter < options.maxOuterIter)
   counter=counter+1;  
   
+   if options.rememLoglikeVals
+      a=cputime;
+   end
+  
   
   % Do the M step calculations
-  [model,options]=ppaMStep(model, options);  
+  if options.doMStep
+      [model,options]=ppaMStep(model, options);  
+  end
  
+  
   
   % Do the E step calculations
   [model,options]=ppaEStep(model, options);
 
   % Calculate the likelihood of the current model 
   [logLike]=ppaCalculateLogLike(model);
+  
+  if options.doDebug
+      logLike=logLike
+      model.updatediffs(4) = logLike - model.oldLogLike - model.updatediffs(1)- model.updatediffs(2)- model.updatediffs(3);
+      diffs = model.updatediffs;
+      diffs = diffs
+  end
+
+  % A check for the f updates
+  if options.doDebug
+      model.oldLogLike = logLike;
+  end
+  
   
   % Plot results at n iteration intervals
   if options.display > 1
@@ -50,6 +81,7 @@ while(convergence==0 & counter < options.maxOuterIter)
     % Display details 
     fprintf('Update %d, log-likelihood change %2.7f\n', counter, logLikeDiff);
   end
+ 
   
   % Check for loglike going down
   if(logLikeDiff<0)
@@ -62,6 +94,11 @@ while(convergence==0 & counter < options.maxOuterIter)
       fprintf('Algorithm has converged');
     end
   end
+   if options.rememLoglikeVals
+      b=cputime;
+      cpuStore=[cpuStore,b-a];
+      logLikeVals = [logLikeVals,logLike];  
+  end
   
   oldLogLike=logLike;  
 end
@@ -69,4 +106,5 @@ end
 if(convergence~=1)
     fprintf('Algorithm has reached maximum number of iterations');
 end
+model.logLike=logLike;
 model.numIters = counter;

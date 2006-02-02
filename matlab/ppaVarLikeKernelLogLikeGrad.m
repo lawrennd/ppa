@@ -19,6 +19,6 @@ for j = 1:size(m, 3)
   if ~model.noise.spherical
     invK = pdinv(K);
   end
-  covGrad = feval([model.type 'CovarianceGradient'], invK, m(:,:, j));
+  covGrad = feval([model.type 'VarLikeCovarianceGradient'], invK, m(:,:, j));
   g = g + kernGradient(model.kern, x, covGrad);
 end  

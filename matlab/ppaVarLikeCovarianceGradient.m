@@ -4,7 +4,7 @@ function g = ppaVarLikeCovarianceGradient(invK, m)
 
 % PPA
 
-invKMInvK = invK*m*invK;
-
-g = -invK + invKMInvK;
-g= g*.5;
+ invKMInvK = invK*m*invK;
+ 
+ g = -invK + invKMInvK;
+ g= g*.5;

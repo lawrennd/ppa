@@ -14,8 +14,8 @@ noiseModel='probit';
 kernelType={'rbf','bias', 'white'};
 
 options = ppaOptions;
-options.display = 2; % display graphically as we go.
-
+options.display = 1; % display graphically as we go.
+%options.kernDisplay=1;
 model=ppa(X, y, noiseModel, kernelType);
 
 [model]=ppaOptimisePPA(model, options)

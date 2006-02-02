@@ -12,14 +12,16 @@ L = 0;% should i have the two pi constant here -.5*numData*log(2*pi)
 
 if model.noise.spherical
   % there is only one value for all beta
-  [invK, UC] = pdinv(K);
-  logDetTerm = logdet(K, UC);
+  [invK, UK] = pdinv(K);
+  logDetTerm = logdet(K, UK);
 end
   
 for i = 1:size(m, 3)
   if ~model.noise.spherical
-    [invK, UC] = pdinv(K);
-    logDetTerm = logdet(K, UC);
+    [invK, UK] = pdinv(K);
+    logDetTerm = logdet(K, UK);
   end
-  L = L -.5*logDetTerm- .5*trace(m(:, :, i)*invK);
+  
+  L = L -.5*logDetTerm- .5*sum(sum(m(:, :, i).*invK));
+  
 end

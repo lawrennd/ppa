@@ -1,0 +1,11 @@
+ppaDataBetaCalib('ionosphere',1,{'rbf','whitefixed'},1e-6,1);
+ppaDataBetaCalib('ionosphere',1,{'rbf','whitefixed'},0.1,2);
+ppaDataBetaCalib('ionosphere',1,{'rbf','whitefixed'},0.2,3);
+ppaDataBetaCalib('ionosphere',1,{'rbf','whitefixed'},0.3,4);
+ppaDataBetaCalib('ionosphere',1,{'rbf','whitefixed'},0.4,5);
+ppaDataBetaCalib('ionosphere',1,{'rbf','whitefixed'},0.5,6);
+ppaDataBetaCalib('ionosphere',1,{'rbf','whitefixed'},0.6,7);
+ppaDataBetaCalib('ionosphere',1,{'rbf','whitefixed'},0.7,8);
+ppaDataBetaCalib('ionosphere',1,{'rbf','whitefixed'},0.8,9);
+ppaDataBetaCalib('ionosphere',1,{'rbf','whitefixed'},0.9,10);
+ppaDataBetaCalib('ionosphere',1,{'rbf','whitefixed'},1-1e-6,11);

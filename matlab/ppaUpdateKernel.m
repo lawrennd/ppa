@@ -4,9 +4,11 @@ function model = ppaUpdateKernel(model, options)
 
 % PPA
 
+    
 % Update the kernel parameters.
 if ~options.varKern
  model=ppaOptimiseKernel(model, options.kernDisplay, options.kernIters);
+
  if options.display
      fprintf('Using non variational kernel update - ');
  end

@@ -1,0 +1,11 @@
+ppaDataSigInvCalib('ionosphere',1,{'rbf','whitefixed'},1e-6,1);
+ppaDataSigInvCalib('ionosphere',1,{'rbf','whitefixed'},0.1,2);
+ppaDataSigInvCalib('ionosphere',1,{'rbf','whitefixed'},0.2,3);
+ppaDataSigInvCalib('ionosphere',1,{'rbf','whitefixed'},0.3,4);
+ppaDataSigInvCalib('ionosphere',1,{'rbf','whitefixed'},0.4,5);
+ppaDataSigInvCalib('ionosphere',1,{'rbf','whitefixed'},0.5,6);
+ppaDataSigInvCalib('ionosphere',1,{'rbf','whitefixed'},0.6,7);
+ppaDataSigInvCalib('ionosphere',1,{'rbf','whitefixed'},0.7,8);
+ppaDataSigInvCalib('ionosphere',1,{'rbf','whitefixed'},0.8,9);
+ppaDataSigInvCalib('ionosphere',1,{'rbf','whitefixed'},0.9,10);
+ppaDataSigInvCalib('ionosphere',1,{'rbf','whitefixed'},1-1e-6,11);

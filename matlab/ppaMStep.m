@@ -4,66 +4,88 @@ function [model,options]= ppaMStep(model, options)
 
 % PPA
 
-if ~options.varKern
-    [currentLogLike]=ppaCalculateLogLike(model);
-    tempKern.diagK=model.kern.diagK;
-    tempKern.type= model.kern.type;
-    tempKern.comp=model.kern.comp;
-    tempKern.nParams=model.kern.nParams;
-    tempKern.transforms=model.kern.transforms;
-    tempKern.paramGroups=model.kern.paramGroups;
-    tempKern.whiteVariance=model.kern.whiteVariance;
-end
+if options.doDebug
+    if options.varKern
+        [currentLogLike]=ppaCalculateLogLike(model);
+        currentSVLogLike = ppaSVMstepLikelihood(model);
+    end
 
+    if ~options.varKern
+        [currentLogLike]=ppaCalculateLogLike(model);
+        tempKern.diagK=model.kern.diagK;
+        tempKern.type= model.kern.type;
+        tempKern.comp=model.kern.comp;
+        tempKern.nParams=model.kern.nParams;
+        tempKern.transforms=model.kern.transforms;
+        tempKern.paramGroups=model.kern.paramGroups;
+        tempKern.whiteVariance=model.kern.whiteVariance;
+        % A test function just checking the part of the likelihood involvign
+        % the M Step parameters
+        currentKLLoglike = ppaKLMstepLikelihood(model);
+    end
+end
 
 % Call the update for the K Kernel
- if options.kernIters
-   model = ppaUpdateKernel(model, options);
- end
+if options.kernIters
+  model = ppaUpdateKernel(model, options);
+end
 
-% check for kernel switch
-if ~options.varKern
-    [logLikeK]=ppaCalculateLogLike(model);
-    logLikeDiffK=logLikeK-currentLogLike;
-    if(logLikeDiffK<0)
-        % If the loglike goes down and we are using the non varitional kernel
-        % updates switch to variationl
+
+if options.doDebug
+    % check for correct update behaviour
+    if ~options.varKern
+        [logLikeK]=ppaCalculateLogLike(model);
+        logLikeDiffK=logLikeK-currentLogLike;
         
-        options.varKern = 1;
-        if options.display
-            fprintf('Switching to full variational updates K, log-likelihood change %2.7f\n',logLikeDiffK);   
+        KernKLLoglike = ppaKLMstepLikelihood(model);
+        KernKLLoglikeDiff = KernKLLoglike - currentKLLoglike;
+        
+           
+        if(KernKLLoglikeDiff<0)
+            fprintf('\n Problem with K, KL log-likelihood change %2.12f\n',KernKLLoglikeDiff);
         end
+        model.updatediffs(1)=KernKLLoglikeDiff;
+    end
+
+    if options.varKern
+        kernSVLogLike = ppaSVMstepLikelihood(model);
+        KernSVLoglikeDiff = kernSVLogLike - currentSVLogLike;
         
-        % Roll back kernel
-        model.kern=tempKern;
-        model.kern.Kstore=kernCompute(model.kern, model.X);
-        model.kern.invKstore=pdinv(model.kern.Kstore);
+                
+        if(KernSVLoglikeDiff<0)
+            fprintf('\n Problem with K, SV log-likelihood change %2.12f\n',KernSVLoglikeDiff);
+        end
+
+        model.updatediffs(1)=KernSVLoglikeDiff;
         
-        % Do this update again this time with variational method
-        model = ppaUpdateKernel(model, options);
     end
 end
 
+if options.updateBeta
 
-% Call the update for the B kernel
-if options.scalarB
-  model = ppaUpdateBscalar(model);
-else
-  model = ppaUpdateB(model);
-end
+    model = ppaScgUpdateBeta(model,options);
+ 
+    % Check for correct updates
+    if options.doDebug
+        if options.varKern
+            BSVLogLike = ppaSVMstepLikelihood(model);
+            BSVLoglikeDiff = BSVLogLike - kernSVLogLike;
+            model.updatediffs(2)=BSVLoglikeDiff;
+ 
+           if(BSVLoglikeDiff<0)
+                fprintf('\n Problem with B, SV log-likelihood change %2.12f\n',BSVLoglikeDiff);
+           end
 
-% check for kernel switch
-if ~options.varKern
-    [logLikeB]=ppaCalculateLogLike(model);
-    logLikeDiffB=logLikeB-logLikeK;%currentLogLike;
-    if(logLikeDiffB<0)
-        % If the loglike goes down and we are using the non varitional kernel
-        % updates switch to variational
         
-        options.varKern = 1;
-        if options.display
-            fprintf('Switching to full variational updates B, log-likelihood change %2.7f\n',logLikeDiffB);   
+        if ~options.varKern
+            BKLLoglike = ppaKLMstepLikelihood(model);
+            BKLLoglikeDiff = BKLLoglike - KernKLLoglike;
+            model.updatediffs(2)=BKLLoglikeDiff;
+
+            if(BKLLoglikeDiff<0)
+                fprintf('\n Problem with B, KL log-likelihood change %2.12f\n',BKLLoglikeDiff);
+            end
+
         end
     end
 end
-
