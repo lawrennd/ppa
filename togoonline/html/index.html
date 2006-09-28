@@ -1,0 +1,250 @@
+<html>
+
+<head>
+<title>Probabilistic Point Assimilation - MATLAB Software</title>
+</head>
+
+<body>
+
+<h1>PPA Software</h1>
+
+This page will describe examples of how to use the Probabilistic Point Assimilation Software (PPA) available for <a href="http://ext.dcs.shef.ac.uk/~u0015/cgi-bin/downloadForm.cgi?toolbox=ppa">download here</a>.
+
+<h3>Release Information</h3>
+
+<p>Current release is 0.1.
+
+<p>Release 0.1 is the first release of this software.
+
+<table>
+  <tr>
+    <td width="65%"><b>Toolbox</b></td>
+    <td width="35%"><b>Version</b></td>
+  </tr>
+  <tr>
+    <td width="65%">
+
+<p align="left"><a href="http://www.dcs.shef.ac.uk/~neil/kern/downloadFiles">KERN</a><br>
+<a href="http://www.dcs.shef.ac.uk/~neil/ndlutil/downloadFiles">NDLUTIL</a><br>
+<a href="http://www.dcs.shef.ac.uk/~neil/optimi/downloadFiles">OPTIMI</a><br>
+<a href="http://www.dcs.shef.ac.uk/~neil/prior/downloadFiles">PRIOR</a><br>
+<a href="http://www.dcs.shef.ac.uk/~neil/mltools/downloadFiles">MLTOOLS</a><br>
+<a href="http://www.dcs.shef.ac.uk/~neil/noise/downloadFiles">NOISE</a></p>
+    </td>
+    <td width="35%">
+
+<p align="center">0.142<br>
+0.15<br>
+0.13<br>
+0.13<br>
+0.11<br>
+0.13</p>
+
+    </td>
+  </tr>
+</table>
+
+
+<p>Finally you will also need the <a href="http://www.ncrg.aston.ac.uk/netlab/">NETLAB toolbox</a> in your path.
+
+<h2>Setting the test up</h2>
+
+<p> In order for the code to function correctly, the files need to be set-up in the structure depicted in the following figure
+
+<p><center><img src="dirfig.png" width="60%"></center>
+
+<p>It should be noted that the <a href="http://users.rsise.anu.edu.au/~raetsch/data/index.html">Gunnar Datasets</a> have had their original directory structure changed. For instance, for the <b>Ringnorm</b> dataset the downloaded structure takes the form
+
+
+<p> <code>\\home\brain\raetsch\expose\ringnorm\*.asc</code>
+
+<p> but we have it as
+
+<p> <code>\\ROOT\mlprojects\data\ringnorm\*.asc .</code>
+
+<p> in our directory structure. Similarly any of the datasets needs to be in the above form, with the data files being found within the directory with the same name.
+We also note that all the required M file packages need to be added to the path. All the test scripts are stored at <code>ROOT/mlprojects/ppa/gunnarTests/</code> and the test M files are put into the PPA <code>matlab </code> directory.
+
+<h3>Enabling all scripts and M files for the tests</h3>
+
+<p> In the following scripts <i>ppaGunnarConvergence.sh</i>, <i>ppaGunnarPlot.sh</i>, <i>ppaGunnar.sh</i>, <i>ppaGunnarResults.sh</i> and  <i>ppaTestGunnar.sh</i> the line
+
+<p> <code>path('/home/nk3/mlprojects/matlab/general',path)</code>
+
+<p> needs to be changed to
+
+<p> <code>path('/USERSROOT/mlprojects/matlab/general',path)</code>
+
+<p> where <code>USERSROOT</code> is the location of the mlprojects directory.
+
+<p> It is also noted that the following files need changing to suit the users file store as well, these M files are <i>ppaGunnarConvergence.m</i>,
+<i>ppaGunnarData.m</i>, <i>ppaGunnarResults.m</i>, <i>ppaGunnarResultsTest.m</i>, <i>ppaGunnarTest.m</i>, <i>ppaPlotConvergenceResults.m</i>, <i>ppaPlotMultipleConvergenceResults1.m</i>,
+<i>ppaPlotMultipleConvergenceResults2.m</i> and <i>ppaPlotMultipleConvergenceResults3.m</i>.
+
+<p>We need to modify these test M files such that we are calling the correct directory structure. As such you need to add or change the home parameter to your <code>ROOT</code> directory. For instance in the files in there orignal form the files have three home options which are
+
+<p><code>% My desktop<br>
+% HOME = 'h:\';<br>
+<br>
+% My Laptop home<br>
+% HOME = 'd:\work';<br>
+<br>
+% My Pascal cluster home<br>
+% HOME = '/home/nk3';<br>
+</code>
+<p>These cover the three machines I have run these tests on. You need to change one of these such that
+<p><code>
+% Your Home<br>
+HOME = 'ROOT';<br>
+</code>
+<p>where <code>ROOT</code> is the directory in which the <code>mlprojects</code> directory is stored. With these changes this completes the setup.
+
+<h2>Four demos</h2>
+<p> We have four simple demos that can be run from the directly from the ppa directory (but still ensure the data stes are in the correct positon within the directory structure). The first three
+tests are classification tests on a linear seperable case, an overlap case and a Banana dataset. The final case is a very simple regression case noise model, although we do note that regression for the model is tractable and does
+not require the approximation we include this test to show show how easy it is to plug in different nosie models.
+
+<h3>Linear seperable demo</h3>
+<p> From the matlab command line, ensure you our within <code>/USERSROOT/mlprojects/ppa/matlab.</code>
+<p> Now run the following command at the command prompt
+
+<p><code>&gt;&gt;  demppa1</code>
+
+<p> Once the model has reached convergence the following plot should be displayed.
+
+
+<p><center><img src="dem1plot.png" width="60%"><br>
+This plot shows the final plot for the <b>linear seperable</b> dataset.</center>
+
+<h3>Overlap demo</h3>
+<p> From the matlab command line, ensure you our within <code>/USERSROOT/mlprojects/ppa/matlab.</code>
+<p> Now run the following command at the command prompt
+
+<p><code>&gt;&gt;  demppa2</code>
+
+<p> Once the model has reached convergence the following plot should be displayed.
+
+
+<p><center><img src="dem2plot.png" width="60%"><br>
+This plot shows the final plot for the <b>overlap</b> dataset.</center>
+
+<h3>Banana demo</h3>
+<p> From the matlab command line, ensure you our within <code>/USERSROOT/mlprojects/ppa/matlab.</code>
+<p> Now run the following command at the command prompt
+
+<p><code>&gt;&gt;  demppa3</code>
+
+<p> Once the model has reached convergence the following plot should be displayed.
+
+<p><center><img src="dem3plot.png" width="60%"><br>
+This plot shows the final plot for the <b>banana</b> dataset.</center>
+
+<h3>Regression demo</h3>
+<p> From the matlab command line, ensure you our within <code>/USERSROOT/mlprojects/ppa/matlab.</code>
+<p> Now run the following command at the command prompt
+
+<p><code>&gt;&gt;  demppaRegression1</code>
+
+<p> Once the model has reached convergence the following plot should be displayed.
+<p><center><img src="regressplot.png" width="60%"><br>
+This plot shows the final plot for the <b>regression</b> dataset.</center>
+
+<h2>Convergence tests using the scripts</h2>
+
+<p>The script files were designed to be run on a SCG managed cluster primarily the Pascal cluster. To run repeat the following
+
+<p> From the server command line run the following
+
+<p><code>
+&gt;&gt; bash ppaGunnarConvergenceSCG.sh
+</code>
+
+<p>  once all the processes have finished running you can then run
+
+
+<p><code>
+&gt;&gt;  bash ppaGunnarplot.sh
+</code>
+
+<p>this will result in the convergence figures being plotted. The EPS plots will be saved in the following location
+
+<p> <code>ROOT\mlprojects\data\DATASETNAME\ICMLconv\ DATASETNAME_1 convFig.eps</code>
+<p> <code>ROOT\mlprojects\data\DATASETNAME\ICMLconv\ DATASETNAME_1_cpuFig.eps</code>
+
+<p> where the former is a plot of the convergence of the standard variational method compared with that of the KL corrected bound and the latter is a plot of the CPU times per iteration.
+
+
+<h2>Convergence tests directly from the Matlab command line</h2>
+
+<p> The following example is for the <b>banana</b> dataset and for the first fold.
+
+<p> From the matlab command line move to the <code>ppa/gunnarTests</code> directory.
+
+<p> First run the following comman in the gunnarTest folder
+
+<p><code>&gt;&gt;  ppaGunnarConvergence('banana',1)</code>
+
+<p> after which there will be a bit of a wait.
+
+<p> After this process has finished now run the following command at the command prompt
+
+<p><code>&gt;&gt;  ppaPlotConvergenceResults('banana',1)</code>
+
+<p> This command should result in the following  information and plots to be displayed.
+
+<p><code>
+KL classification = 0.1181633 and SV classification = 0.1179592<br>
+KL loglike = -130.8580181 and SV loglike = -130.8979431<br>
+KL total number of iterations = 120.0000000, SV total number of iterations = 4102.0000000<br>
+The difference between the iteration numbers (SV - KL) = 3982.0000000<br>
+KL total CPU time = 1127.5400000 and SV total CPU time = 22544.1100000<br>
+The difference between the CPU times (SV - KL) = 21416.5700000<br>
+</code>
+
+<p><center><img src="bananaconv.png" width="60%"><br>
+This plot shows the convergence figure for the <b>banana</b> dataset. <br>
+<img src="bananacpu.png" width="60%"><br>
+This plot shows the CPU times figure for the <b>banana</b> dataset.</center>
+
+
+
+<p> Note if you wished to run these for any of the other datasets just substitute in the particular data sets name.
+
+
+
+<h2>Classification tests</h2>
+
+<p>Once again the scripts were designed to be run on the SCG managed pascal cluster. To run them you need to set up the files as previously noted.
+<p> From the command prompt on the cluster you first need move to the directory <code>ROOT\mlprojects\ppa\gunnartests\</code>. From there you frist run the following
+
+<p><code>&gt;&gt;bash ppaGunnar.sh</code>
+
+<p>this will send a lot of jobs to the cluster. These will take a while to run so be prepared for a wait.
+
+<p> Once these jobs have completed the next step is to run the following script
+
+<p><code>&gt;&gt;bash ppaGunnarResults.sh</code>
+
+<p>Once again this will send a job to the cluster but unlike the other this should only take a minute to run. Once this
+job is complete we then have to finally run
+
+<p><code>&gt;&gt;bash ppaTestGunnar.sh</code>
+
+<p> Once these final jobs has finished you will find in your <code>ROOT</code> directory a set of .mat files namely
+<p><code>banana.mat, breast-cancer.mat,diabetis.mat, german.mat, heart.mat, titanic.mat, twonorm.mat and waveform.mat.</code>
+
+<p> The mean and standard deviation of the test error for each data set can be found by first loading the dataset's <code>*.mat</code> (in the following we are loading the banana data set)
+
+<p><code>&gt;&gt; bananaLoad =  load('banana.mat')</code>
+
+we can then find the mean
+
+<p><code>&gt;&gt; meanB =  mean(bananaLoad.er)</code>
+
+and the standard deviation
+
+<p><code>&gt;&gt; meanB =  std(bananaLoad.er)</code>.
+
+
+</body>
+</html>
