@@ -1,2 +1,5 @@
-# ppa
-Probabilistic Point Assimilation: Variational Inference Software for Gaussian Processes.
+
+Probabilistic Point Assimilation for Gaussian Processes
+=======================================================
+
+The code for variational inference using KL correction in GPs.
